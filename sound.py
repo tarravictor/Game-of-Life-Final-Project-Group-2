@@ -3,7 +3,7 @@ NumPy builds the waves; pygame.mixer plays them. No recorded songs."""
 
 import numpy as np
 import pygame
-from music import midi_to_freq   # from Manalili
+import music   # from Manalili
 
 SAMPLE_RATE = 44100
 
@@ -61,26 +61,27 @@ class SoundEngine:
         self.volume = 7
         self.sounds = {}
         try:
-            pygame.mixer.init(frequency=SAMPLE_RATE, size=-16, channels=1)
+            pygame.mixer.init(frequency=SAMPLE_RATE, size=-16, channels=2)
             pygame.mixer.set_num_channels(32)
         except (pygame.error, NotImplementedError):
             self.available = False
 
-    @property
     def status(self):
-        """'on', 'muted' or 'unavailable' (shown in the status bar)."""
+        """'Sound: on', 'Sound: muted' or 'Sound: unavailable'
+        (shown in the status bar)."""
         if not self.available:
-            return "unavailable"
+            return "Sound: unavailable"
         if self.muted:
-            return "muted"
-        return "on"
+            return "Sound: muted"
+        return "Sound: on"
 
     def build(self, instrument, midi):
         key = (instrument, midi)
         if key not in self.sounds:
-            wave = INSTRUMENTS[instrument](midi_to_freq(midi))
-            data = (wave * 0.5 * 32767).astype(np.int16)
-            self.sounds[key] = pygame.mixer.Sound(buffer=data.tobytes())
+            wave = INSTRUMENTS[instrument](music.midi_to_freq(midi))
+            mono = (wave * 0.5 * 32767).astype(np.int16)
+            stereo = np.column_stack((mono, mono))
+            self.sounds[key] = pygame.mixer.Sound(buffer=stereo.tobytes())
         return self.sounds[key]
 
     def preload(self, midis):
@@ -113,8 +114,12 @@ class SoundEngine:
         started = 0
         for note in notes:
             sound = self.build(instrument, note.midi)
-            sound.set_volume(self.volume / 10)
-            if sound.play() is not None:
+            sound.set_volume(self.volume / 10 * note.volume)
+            channel = sound.play()
+            if channel is not None:
+                left = min(1.0, 2 * (1 - note.pan))
+                right = min(1.0, 2 * note.pan)
+                channel.set_volume(left, right)
                 started = started + 1
         return started
 
