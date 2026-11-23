@@ -72,7 +72,24 @@ def next_generation(grid):
 
 
 def compare_generations(previous, current):
-    """True when two boards have identical cell states."""
+    """Return (births, deaths) between two boards as lists of (row, col).
+
+    A birth is a cell that was 0 and is now 1; a death is 1 -> 0.
+    state.py and music.py use these to pick the notes for each generation.
+    """
+    births, deaths = [], []
+    for row in range(len(current)):
+        for col in range(len(current[0])):
+            before, after = previous[row][col], current[row][col]
+            if before == 0 and after == 1:
+                births.append((row, col))
+            elif before == 1 and after == 0:
+                deaths.append((row, col))
+    return births, deaths
+
+
+def same_board(previous, current):
+    """True when two boards have identical cell states (still life)."""
     return previous == current
 
 
@@ -87,7 +104,7 @@ def simulate(grid, max_generations=1000):
         new_grid = next_generation(current)
         if population(new_grid) == 0:
             return new_grid, "empty", generation
-        if compare_generations(current, new_grid):
+        if same_board(current, new_grid):
             return new_grid, "stable", generation
         current = new_grid
     return current, "limit", max_generations
