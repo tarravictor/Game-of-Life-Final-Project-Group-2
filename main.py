@@ -51,7 +51,12 @@ def describe_music(old, new):
     try:
         import music
         births, deaths = life.compare_generations(old, new)
-        notes = music.map_generation_to_notes(births, deaths, new)
+        rows, cols = len(new), len(new[0])
+        living = sum(sum(row) for row in new)
+        scale = next(iter(music.SCALES))
+        notes = music.map_generation_to_notes(births, deaths, living, rows, cols, scale)
+        if notes is None:
+            return None
         return "Notes: " + str(music.describe_notes(notes))
     except Exception:
         return None
@@ -83,9 +88,14 @@ def run(name, rows, cols, max_gens, show_music=False):
 def main(argv):
     name = argv[1] if len(argv) > 1 else "blinker"
     try:
-        rows = int(argv[2]) if len(argv) > 2 else 5
-        cols = int(argv[3]) if len(argv) > 3 else 5
-        gens = int(argv[4]) if len(argv) > 4 else 10
+        try:
+            rows = int(argv[2]) if len(argv) > 2 else 5
+            cols = int(argv[3]) if len(argv) > 3 else 5
+            gens = int(argv[4]) if len(argv) > 4 else 10
+        except ValueError:
+            raise ValueError("rows, cols and generations must be whole numbers, e.g. python main.py glider 8 8 12")
+        if gens < 1:
+            raise ValueError("generations must be at least 1")
         run(name, rows, cols, gens, show_music="--music" in argv)
     except ValueError as err:
         print("Error: %s" % err)
