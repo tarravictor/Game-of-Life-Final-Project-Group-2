@@ -43,10 +43,14 @@ python -m unittest
 
 | File | Owner | Job |
 |---|---|---|
+| `life.py` | Armas | Core algorithm: grid, neighbour count, B3/S23 rule, next generation, births and deaths, stopping (empty / stable / limit) |
+| `patterns.py` | Armas | Block, Blinker and Glider, and `place_pattern` |
+| `state.py` | Tumulac | Play/pause, step, clear, random, speed and cell toggling (no drawing) |
+| `test_life.py` | Tumulac | Unit tests: 3 normal, 1 boundary, 1 invalid-input, plus state tests |
 | `music.py` | Manalili | Rules that turn births and deaths into notes (`Note`, `midi_to_freq`) |
 | `sound.py` | Diego | Builds the instrument tones and plays the notes (`SoundEngine`) |
 | `test_sound.py` | Diego | Tests for `sound.py` |
-| `main.py` | Tarra | Text prototype: reads input and prints generations |
+| `main.py` | Tarra | Text prototype: reads input, prints generations, joins the modules |
 | `requirements.txt` | Diego | Libraries to install (pygame, numpy) |
 
 ## Members
