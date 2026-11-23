@@ -21,6 +21,16 @@ pip install -r requirements.txt
 
 ## Run
 
+The GUI (pygame window):
+
+```
+python gui.py
+```
+
+Keys: Space play/pause, S step, C clear, R random, M mute, 1 block, 2 blinker, 3 glider, Up/Down speed. Click a cell to make it alive or dead.
+
+The text prototype:
+
 ```
 python main.py
 ```
@@ -50,6 +60,8 @@ python -m unittest
 | `music.py` | Manalili | Rules that turn births and deaths into notes (`Note`, `midi_to_freq`) |
 | `sound.py` | Diego | Builds the instrument tones and plays the notes (`SoundEngine`) |
 | `test_sound.py` | Diego | Tests for `sound.py` |
+| `gui.py` | Tarra | pygame window: grid, side panel, status bar (uses `state.py`) |
+| `test_gui.py` | Tarra | Tests for the GUI helpers |
 | `main.py` | Tarra | Text prototype: reads input, prints generations, joins the modules |
 | `requirements.txt` | Diego | Libraries to install (pygame, numpy) |
 
